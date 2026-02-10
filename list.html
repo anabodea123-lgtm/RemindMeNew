@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List - RemindMe</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pink-primary: #FF6B9D;
+            --pink-light: #FFB3D9;
+            --pink-pale: #FFF0F5;
+            --pink-deep: #D63384;
+            --cream: #FFFBF7;
+            --text-dark: #2C2C2C;
+            --shadow: rgba(255, 107, 157, 0.15);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--cream);
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 260px;
+            height: 100vh;
+            background: linear-gradient(135deg, var(--pink-pale) 0%, #FFF 100%);
+            padding: 40px 0;
+            border-right: 2px solid var(--pink-light);
+            box-shadow: 4px 0 20px var(--shadow);
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .logo {
+            font-family: 'Caveat', cursive;
+            font-size: 42px;
+            color: var(--pink-primary);
+            text-align: center;
+            margin-bottom: 60px;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+            transition: transform 0.2s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05) rotate(-2deg);
+        }
+
+        .logo::after {
+            content: '💖';
+            display: block;
+            font-size: 24px;
+            margin-top: -8px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0 20px;
+        }
+
+        .nav-item {
+            margin-bottom: 8px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            color: var(--text-dark);
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 0;
+            height: 100%;
+            background: linear-gradient(90deg, var(--pink-primary), var(--pink-light));
+            transition: width 0.3s ease;
+            z-index: -1;
+            border-radius: 12px;
+        }
+
+        .nav-link:hover::before,
+        .nav-link.active::before {
+            width: 100%;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .nav-icon {
+            margin-right: 12px;
+            font-size: 20px;
+        }
+
+        .main-content {
+            margin-left: 260px;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .page-header {
+            padding: 40px 60px;
+            background: white;
+            border-bottom: 2px solid var(--pink-pale);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--pink-deep);
+            margin-bottom: 8px;
+            display: inline-block;
+            position: relative;
+        }
+
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--pink-primary), transparent);
+            border-radius: 2px;
+        }
+
+        .page-subtitle {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .content-area {
+            padding: 40px 60px;
+        }
+
+        .embed-container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            overflow: hidden;
+            border: 2px solid var(--pink-pale);
+            animation: fadeIn 0.6s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .embed-frame {
+            width: 100%;
+            min-height: 80vh;
+            border: none;
+            display: block;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 80vh;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid var(--pink-pale);
+            border-top: 4px solid var(--pink-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: var(--pink-primary);
+            font-weight: 500;
+        }
+
+        .menu-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: var(--pink-primary);
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .page-header,
+            .content-area {
+                padding: 30px 20px;
+            }
+
+            .page-title {
+                font-size: 24px;
+            }
+        }
+
+        .decorative-dot {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background: var(--pink-light);
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: floatRandom 4s ease-in-out infinite;
+        }
+
+        @keyframes floatRandom {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(20px, -20px); }
+        }
+    </style>
+</head>
+<body>
+    <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+
+    <div class="decorative-dot" style="top: 10%; right: 15%; animation-delay: 0s;"></div>
+    <div class="decorative-dot" style="top: 60%; right: 8%; animation-delay: 1s;"></div>
+    <div class="decorative-dot" style="top: 85%; right: 25%; animation-delay: 2s;"></div>
+
+    <nav class="sidebar" id="sidebar">
+        <a href="index.html" class="logo">RemindMe</a>
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="index.html" class="nav-link">
+                    <span class="nav-icon">🏠</span>
+                    <span>RemindMe</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="new-appointment.html" class="nav-link">
+                    <span class="nav-icon">✨</span>
+                    <span>New Appointment</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="calendar.html" class="nav-link">
+                    <span class="nav-icon">📅</span>
+                    <span>Calendar</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="list.html" class="nav-link active">
+                    <span class="nav-icon">📋</span>
+                    <span>List</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <header class="page-header">
+            <h1 class="page-title">List</h1>
+            <p class="page-subtitle">All your appointments in detail</p>
+        </header>
+        
+        <div class="content-area">
+            <div class="embed-container">
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <p class="loading-text">Loading list...</p>
+                </div>
+                <!-- Replace the src URL below with your Airtable list view embed URL -->
+                <iframe 
+                    class="embed-frame" 
+                    src="YOUR_AIRTABLE_LIST_URL_HERE"
+                    onload="hideLoading(this)"
+                    style="display: none;">
+                </iframe>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function hideLoading(iframe) {
+            const container = iframe.parentElement;
+            const loading = container.querySelector('.loading');
+            if (loading) loading.style.display = 'none';
+            iframe.style.display = 'block';
+        }
+
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        }
+
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.querySelector('.menu-toggle');
+            
+            if (window.innerWidth <= 768 && 
+                !sidebar.contains(event.target) && 
+                !toggle.contains(event.target) &&
+                sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active');
+            }
+        });
+
+        const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === currentPage) {
+                link.classList.add('active');
+            }
+        });
+    </script>
+</body>
+</html>
